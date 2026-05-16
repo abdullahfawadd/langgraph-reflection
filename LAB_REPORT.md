@@ -155,6 +155,118 @@ Use these placeholders in your final Word/PDF submission:
 [Attach Screenshot Here: Screenshot 7 - Multi Tool Advisor Response]
 ```
 
+## Recommended Report Document Layout
+
+Use this order in your Word/PDF submission. Add the screenshots exactly under the matching headings.
+
+### 1. Solved Lab Activity - LangGraph Reflection Agent
+
+Write 3-4 lines:
+
+```text
+This solved activity implements the Reflection Pattern using LangGraph. The manual Generator-Critic-Revise loop is represented with State, Nodes, Edges, and a StateGraph. The generator creates or revises output, the critic reviews it, and the router decides whether to revise again or stop.
+```
+
+Code to include under this heading:
+
+```text
+reflection/state.py      -> ReflectionState with add_messages
+reflection/nodes.py      -> generator_node and critic_node
+reflection/graph.py      -> should_continue and StateGraph assembly
+main.py                  -> /health, /visualise, /reflect, /stream endpoints
+```
+
+Screenshots to include under this heading:
+
+```text
+[SS Solved 1] GET /health response showing graph_nodes = generator, critic
+[SS Solved 2] GET /visualise?graph=reflection response in Postman
+[SS Solved 3] Uvicorn terminal showing Reflection graph diagram
+[SS Solved 4] POST /reflect response showing final_draft and reflection_rounds
+[SS Solved 5] POST /stream response showing generator and critic events
+```
+
+Your attached screenshot belongs here:
+
+```text
+Solved Lab Activity -> SS Solved 2 -> GET /visualise?graph=reflection
+```
+
+It is correct because it shows `200 OK`, `graph: reflection`, and the `nodes` response. For a clearer final screenshot, use this exact URL:
+
+```text
+http://127.0.0.1:8010/visualise?graph=reflection
+```
+
+### 2. Graded Lab Task 1 - Domain Change to FYP Feedback Agent
+
+Write 3-4 lines:
+
+```text
+In Graded Task 1, the Reflection agent domain was changed from essay writing to FYP feedback. The graph structure stayed the same, but the generator and critic prompts were changed. This proves LangGraph separates domain behavior from graph architecture.
+```
+
+Code to include under this heading:
+
+```text
+reflection/nodes.py      -> FYP generator prompt and critic prompt
+main.py                  -> ReflectionRequest example updated for FYP title and problem statement
+docs/lab10_answers.md    -> 5-7 line reflection question answer
+```
+
+Screenshots to include under this heading:
+
+```text
+[SS Task 1A] POST /reflect request body with FYP title and problem statement
+[SS Task 1B] POST /reflect response showing four sections: Technical Feasibility, Novelty, Scope, Recommendations
+[SS Task 1C] POST /reflect response showing reflection_rounds >= 2
+[SS Task 1D] POST /reflect response showing critique and approved field
+```
+
+Written answer to paste:
+
+```text
+Paste the "Graded Task 1 Reflection Question" section from docs/lab10_answers.md.
+```
+
+### 3. Take Home Lab Task - LangGraph Tool Use Student Grade Advisor
+
+Write 3-4 lines:
+
+```text
+The take-home task implements the Tool Use Pattern using LangGraph. The LLM node decides when tools are needed, the tool node executes Python functions, and the router loops back until the LLM can produce a final answer grounded in tool results.
+```
+
+Code to include under this heading:
+
+```text
+grade_advisor/state.py   -> ToolUseState with add_messages, tool_log, turn_count, question fields
+grade_advisor/tools.py   -> get_cgpa, get_course_grades, check_graduation_eligibility
+grade_advisor/nodes.py   -> llm_node with bind_tools and tool_node for executing tools
+grade_advisor/graph.py   -> should_use_tools and Tool Use StateGraph
+main.py                  -> POST /advise endpoint
+docs/lab10_answers.md    -> Tool Use alignment table and 8-10 line explanation
+```
+
+Screenshots to include under this heading:
+
+```text
+[SS Home 1] GET /visualise?graph=advisor response in Postman
+[SS Home 2] Uvicorn terminal showing llm -> tools -> llm graph loop
+[SS Home 3] POST /advise single-tool request body
+[SS Home 4] POST /advise single-tool response showing tools_called = get_cgpa
+[SS Home 5] POST /advise multi-tool request body
+[SS Home 6] POST /advise multi-tool response showing get_course_grades, get_cgpa, check_graduation_eligibility
+[SS Home 7] POST /advise multi-tool response showing tool_log
+```
+
+Written answers to paste:
+
+```text
+Paste the "Tool Use Alignment Table" from docs/lab10_answers.md.
+Paste the "Take-Home Explanation" from docs/lab10_answers.md.
+```
+
 ## Endpoint Test 1 - Health Check
 
 Purpose: prove the API is running and both graphs are loaded.
