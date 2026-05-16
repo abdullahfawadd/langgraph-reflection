@@ -1,0 +1,103 @@
+{
+  "info": {
+    "name": "Lab 10 LangGraph Reflection and Tool Use",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/health"
+      }
+    },
+    {
+      "name": "Visualise Reflection",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/visualise?graph=reflection"
+      }
+    },
+    {
+      "name": "Visualise Advisor",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/visualise?graph=advisor"
+      }
+    },
+    {
+      "name": "Reflect FYP Feedback",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"task\": \"Title: AI-Based Attendance Monitoring System\\nProblem Statement: Manual attendance tracking in university classes is slow and error-prone. The project proposes a face recognition system that records attendance and generates reports for instructors.\",\n  \"max_rounds\": 3\n}"
+        },
+        "url": "{{baseUrl}}/reflect"
+      }
+    },
+    {
+      "name": "Stream Reflection",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"task\": \"Title: Smart Complaint Routing for University Helpdesks\\nProblem Statement: Students submit complaints through multiple channels. The system should classify complaints and route them to the correct department.\",\n  \"max_rounds\": 3\n}"
+        },
+        "url": "{{baseUrl}}/stream"
+      }
+    },
+    {
+      "name": "Advise Single Tool",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"student_id\": \"AU-2021-CS-001\",\n  \"question\": \"What is my current CGPA and academic standing?\"\n}"
+        },
+        "url": "{{baseUrl}}/advise"
+      }
+    },
+    {
+      "name": "Advise Multi Tool",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"student_id\": \"AU-2021-CS-001\",\n  \"question\": \"Show my Fall 2025 grades, CGPA, and graduation eligibility.\"\n}"
+        },
+        "url": "{{baseUrl}}/advise"
+      }
+    }
+  ]
+}
