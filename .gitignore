@@ -21,6 +21,7 @@ htmlcov/
 
 *.log
 *.tmp
+*.pid
 dist/
 build/
 *.egg-info/
