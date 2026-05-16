@@ -1,25 +1,16 @@
-# Lab 10 Report and Testing Guide
+# Lab 10 Report, Postman Testing, and Screenshot Guide
 
-## Project Title
+## Project Information
 
-LangGraph Reflection Pattern and Tool Use Pattern Implementation
+Project title: LangGraph Reflection Pattern and Tool Use Pattern Implementation
 
 Course: SE483 - Generative AI for Software Engineering
 
 Repository: `https://github.com/abdullahfawadd/langgraph-reflection`
 
-## Objective
+Local project path: `d:\langgraph-reflection`
 
-This lab implements two agentic patterns using LangGraph:
-
-1. Reflection Pattern: a Generator-Critic-Revise loop converted into a LangGraph `StateGraph`.
-2. Tool Use Pattern: a Student Grade Advisor that lets the LLM call Python tools for academic data.
-
-The project uses FastAPI for API endpoints and Groq `llama-3.1-8b-instant` through `langchain-groq`.
-
-## Current Running Server
-
-On this machine, port `8000` was already occupied by another Python process, so the lab server is running on:
+Running server URL on this machine:
 
 ```text
 http://127.0.0.1:8010
@@ -31,64 +22,59 @@ Swagger UI:
 http://127.0.0.1:8010/docs
 ```
 
-If you stop the server and port `8000` is free later, you can also run it on `8000`.
+Note: Port `8000` was already occupied on this machine, so this project is running on port `8010`.
+
+## Objective
+
+This lab implements agentic patterns using LangGraph:
+
+1. Reflection Pattern: a Generator-Critic-Revise loop using LangGraph `StateGraph`.
+2. Tool Use Pattern: a Student Grade Advisor that calls Python tools instead of guessing academic data.
+
+The app uses FastAPI, LangGraph, LangChain, `langchain-groq`, and Groq `llama-3.1-8b-instant`.
+
+## API Key Status
+
+The Groq key is added locally in `.env` so the app can run.
+
+Important:
+
+- `.env` is ignored by git.
+- The key is not committed or pushed to GitHub.
+- Because the key was shared in chat, it should still be rotated after testing.
+
+The committed safe example file is:
+
+```text
+.env.example
+```
 
 ## Project Structure
 
 ```text
 langgraph-reflection/
-├── reflection/
-│   ├── state.py       # ReflectionState with add_messages
-│   ├── nodes.py       # FYP feedback generator and critic nodes
-│   └── graph.py       # Reflection graph and routing function
-├── grade_advisor/
-│   ├── state.py       # ToolUseState with add_messages
-│   ├── tools.py       # Simulated student data tools
-│   ├── nodes.py       # llm_node and tool_node
-│   └── graph.py       # Tool Use graph and routing function
-├── main.py            # FastAPI app and endpoints
-├── docs/
-│   └── lab10_answers.md
-├── postman_collection.json
-├── requirements.txt
-├── README.md
-└── .env.example
+|-- reflection/
+|   |-- state.py        # ReflectionState with add_messages reducer
+|   |-- nodes.py        # FYP feedback generator and critic nodes
+|   `-- graph.py        # Reflection graph and routing function
+|-- grade_advisor/
+|   |-- state.py        # ToolUseState with add_messages reducer
+|   |-- tools.py        # Simulated student academic data tools
+|   |-- nodes.py        # llm_node and tool_node
+|   `-- graph.py        # Tool Use graph and routing function
+|-- docs/
+|   `-- lab10_answers.md
+|-- main.py             # FastAPI app
+|-- postman_collection.json
+|-- requirements.txt
+|-- README.md
+|-- LAB_REPORT.md
+`-- .env.example
 ```
 
-## Important Security Step
+## How to Run
 
-The Groq API key that was pasted in chat must be considered exposed. Rotate it in the Groq console before live testing.
-
-Do not commit `.env`.
-
-Create `.env` locally:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-Then edit `.env`:
-
-```text
-GROQ_API_KEY=your_rotated_groq_api_key_here
-```
-
-Restart the server after changing `.env`.
-
-## Setup Steps
-
-Run these commands from the project root:
-
-```powershell
-cd d:\langgraph-reflection
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-```
-
-## Run the Server
-
-Use port `8010` on this machine:
+From PowerShell:
 
 ```powershell
 cd d:\langgraph-reflection
@@ -96,35 +82,93 @@ cd d:\langgraph-reflection
 uvicorn main:app --reload --port 8010
 ```
 
-Open:
+Open Swagger:
 
 ```text
 http://127.0.0.1:8010/docs
 ```
 
-## Basic Validation Without Groq Key
+## Quick Verification Commands
 
-These checks do not require the Groq API key:
+These checks confirm the project imports and the non-LLM endpoints work:
 
 ```powershell
 python -m compileall main.py reflection grade_advisor scripts
 python scripts\smoke_test.py
 ```
 
-Expected result:
+Expected output:
 
 ```text
 Smoke checks passed.
 ```
 
-## Endpoint Testing Guide
+## Postman Setup Process
 
-### 1. Health Check
+1. Open Postman.
+2. Click `Import`.
+3. Import `postman_collection.json`.
+4. Open the imported collection.
+5. Set collection variable:
 
-Method:
+```text
+baseUrl = http://127.0.0.1:8010
+```
+
+6. Set request timeout:
+
+```text
+Settings -> General -> Request timeout in ms -> 120000
+```
+
+7. Run the requests in this order:
+
+```text
+1. Health
+2. Visualise Reflection
+3. Visualise Advisor
+4. Reflect FYP Feedback
+5. Stream Reflection
+6. Advise Single Tool
+7. Advise Multi Tool
+```
+
+## General Screenshot Rules
+
+For every screenshot, include:
+
+- The full Postman request URL.
+- The HTTP method.
+- The JSON body if it is a POST request.
+- The response body.
+- For graph screenshots, include the terminal where Uvicorn is running.
+
+Use these placeholders in your final Word/PDF submission:
+
+```text
+[Attach Screenshot Here: Screenshot 1 - Health Check]
+[Attach Screenshot Here: Screenshot 2 - Reflection Graph]
+[Attach Screenshot Here: Screenshot 3 - Advisor Graph]
+[Attach Screenshot Here: Screenshot 4 - FYP Reflection Response]
+[Attach Screenshot Here: Screenshot 5 - Stream Response]
+[Attach Screenshot Here: Screenshot 6 - Single Tool Advisor Response]
+[Attach Screenshot Here: Screenshot 7 - Multi Tool Advisor Response]
+```
+
+## Endpoint Test 1 - Health Check
+
+Purpose: prove the API is running and both graphs are loaded.
+
+Postman request:
 
 ```http
-GET http://127.0.0.1:8010/health
+GET {{baseUrl}}/health
+```
+
+Direct URL:
+
+```text
+http://127.0.0.1:8010/health
 ```
 
 Expected response includes:
@@ -139,25 +183,29 @@ Expected response includes:
 }
 ```
 
-Screenshot to attach:
+Screenshot placeholder:
 
-`Screenshot 1 - GET /health response showing generator, critic, llm, and tools nodes`
+```text
+[Attach Screenshot Here: Screenshot 1 - GET /health response showing generator, critic, llm, and tools]
+```
 
-### 2. Visualise Reflection Graph
+## Endpoint Test 2 - Visualise Reflection Graph
 
-Method:
+Purpose: prove the Reflection graph still has the generator and critic loop.
+
+Postman request:
 
 ```http
-GET http://127.0.0.1:8010/visualise?graph=reflection
+GET {{baseUrl}}/visualise?graph=reflection
 ```
 
-Expected response includes nodes:
+Direct URL:
 
-```json
-["generator", "critic"]
+```text
+http://127.0.0.1:8010/visualise?graph=reflection
 ```
 
-Also check the terminal running Uvicorn. It prints the graph and the teaching diagram:
+Expected graph:
 
 ```text
 START -> generator -> critic
@@ -165,25 +213,29 @@ critic --revise--> generator
 critic --done--> END
 ```
 
-Screenshot to attach:
+Screenshot placeholder:
 
-`Screenshot 2 - terminal showing Reflection graph with generator and critic loop`
+```text
+[Attach Screenshot Here: Screenshot 2 - Uvicorn terminal showing Reflection graph with generator and critic loop]
+```
 
-### 3. Visualise Tool Use Graph
+## Endpoint Test 3 - Visualise Tool Use Graph
 
-Method:
+Purpose: prove the Tool Use graph has the LLM-tool dispatch loop.
+
+Postman request:
 
 ```http
-GET http://127.0.0.1:8010/visualise?graph=advisor
+GET {{baseUrl}}/visualise?graph=advisor
 ```
 
-Expected response includes nodes:
+Direct URL:
 
-```json
-["llm", "tools"]
+```text
+http://127.0.0.1:8010/visualise?graph=advisor
 ```
 
-Also check the terminal running Uvicorn. It prints the graph and the teaching diagram:
+Expected graph:
 
 ```text
 START -> llm
@@ -192,16 +244,34 @@ tools -> llm
 llm --done--> END
 ```
 
-Screenshot to attach:
+Screenshot placeholder:
 
-`Screenshot 3 - terminal showing Tool Use graph with llm and tools loop`
+```text
+[Attach Screenshot Here: Screenshot 3 - Uvicorn terminal showing Tool Use graph with llm and tools loop]
+```
 
-### 4. FYP Reflection Agent
+## Graded Lab Task 1 - FYP Feedback Reflection Agent
 
-Method:
+Task requirement:
+
+- Change the domain to an FYP Feedback Agent.
+- The generator writes structured FYP feedback reports.
+- The critic checks specificity, actionability, completeness, and professional tone.
+- `state.py` and `graph.py` remain the same graph structure.
+
+Implemented files:
+
+```text
+reflection/state.py
+reflection/nodes.py
+reflection/graph.py
+main.py
+```
+
+Postman request:
 
 ```http
-POST http://127.0.0.1:8010/reflect
+POST {{baseUrl}}/reflect
 Content-Type: application/json
 ```
 
@@ -227,24 +297,47 @@ Expected response fields:
 }
 ```
 
-The exact text will vary because the LLM generates it live. For grading, make sure:
+What to check:
 
 - `final_draft` is not empty.
-- It contains four sections: Technical Feasibility, Novelty, Scope, Recommendations.
+- `final_draft` includes Technical Feasibility.
+- `final_draft` includes Novelty.
+- `final_draft` includes Scope.
+- `final_draft` includes Recommendations.
 - `reflection_rounds` is at least `2`.
-- `approved` field is present.
-- Feedback is specific and actionable.
+- `approved` field exists.
+- The feedback is specific and actionable.
 
-Screenshot to attach:
+Screenshot placeholders:
 
-`Screenshot 4 - POST /reflect response showing final_draft, critique, reflection_rounds >= 2, and approved`
+```text
+[Attach Screenshot Here: Screenshot 4A - POST /reflect request body in Postman]
+[Attach Screenshot Here: Screenshot 4B - POST /reflect response showing final_draft]
+[Attach Screenshot Here: Screenshot 4C - POST /reflect response showing reflection_rounds >= 2 and approved field]
+```
 
-### 5. Stream Reflection Steps
+Written reflection answer:
 
-Method:
+Use the answer already written in:
+
+```text
+docs/lab10_answers.md
+```
+
+Placeholder for final submission:
+
+```text
+[Paste Graded Task 1 Reflection Question Answer Here]
+```
+
+## Graded Lab Task 1 - Stream Demonstration
+
+Purpose: prove `.stream()` shows intermediate Reflection steps.
+
+Postman request:
 
 ```http
-POST http://127.0.0.1:8010/stream
+POST {{baseUrl}}/stream
 Content-Type: application/json
 ```
 
@@ -266,18 +359,57 @@ generator event
 critic event
 ```
 
-The exact number of events depends on when the critic approves or when `max_rounds` is reached.
+Screenshot placeholder:
 
-Screenshot to attach:
+```text
+[Attach Screenshot Here: Screenshot 5 - POST /stream showing generator and critic events]
+```
 
-`Screenshot 5 - POST /stream showing generator and critic events arriving progressively`
+## Graded Lab Task 2 - Tool Use Student Grade Advisor
 
-### 6. Student Grade Advisor - Single Tool Query
+Task requirement:
 
-Method:
+- Implement Tool Use Pattern in LangGraph.
+- Build a Student Grade Advisor for Air University students.
+- Use Python tools for academic data.
+- LLM must call tools through `bind_tools()`.
+- Tool node executes tool calls and returns tool messages.
+- Routing function checks whether the last message contains tool calls.
+
+Implemented files:
+
+```text
+grade_advisor/state.py
+grade_advisor/tools.py
+grade_advisor/nodes.py
+grade_advisor/graph.py
+main.py
+```
+
+Implemented tools:
+
+```text
+get_cgpa(student_id)
+get_course_grades(student_id, semester)
+check_graduation_eligibility(student_id)
+```
+
+Available sample student IDs:
+
+```text
+AU-2021-CS-001
+AU-2022-SE-017
+AU-2020-AI-010
+```
+
+### Task 2 Test A - Single Tool Query
+
+Purpose: prove the LLM can call one tool.
+
+Postman request:
 
 ```http
-POST http://127.0.0.1:8010/advise
+POST {{baseUrl}}/advise
 Content-Type: application/json
 ```
 
@@ -290,7 +422,7 @@ Body:
 }
 ```
 
-Expected response fields:
+Expected response includes:
 
 ```json
 {
@@ -300,16 +432,21 @@ Expected response fields:
 }
 ```
 
-Screenshot to attach:
+Screenshot placeholders:
 
-`Screenshot 6 - POST /advise single-tool response showing get_cgpa in tools_called`
+```text
+[Attach Screenshot Here: Screenshot 6A - POST /advise single-tool request body]
+[Attach Screenshot Here: Screenshot 6B - POST /advise response showing get_cgpa in tools_called]
+```
 
-### 7. Student Grade Advisor - Multi Tool Query
+### Task 2 Test B - Multi Tool Query
 
-Method:
+Purpose: prove the LLM can call multiple tools in the same graph run.
+
+Postman request:
 
 ```http
-POST http://127.0.0.1:8010/advise
+POST {{baseUrl}}/advise
 Content-Type: application/json
 ```
 
@@ -322,7 +459,7 @@ Body:
 }
 ```
 
-Expected response fields:
+Expected response includes several tools:
 
 ```json
 {
@@ -336,84 +473,100 @@ Expected response fields:
 }
 ```
 
-The order may vary depending on the LLM, but the response should use multiple tools.
+The order of `tools_called` can vary depending on the model.
 
-Screenshot to attach:
-
-`Screenshot 7 - POST /advise multi-tool response showing course grades, CGPA, graduation eligibility, and tool_log`
-
-## Postman Collection
-
-Import this file into Postman:
+Screenshot placeholders:
 
 ```text
-postman_collection.json
+[Attach Screenshot Here: Screenshot 7A - POST /advise multi-tool request body]
+[Attach Screenshot Here: Screenshot 7B - POST /advise response showing multiple tools_called]
+[Attach Screenshot Here: Screenshot 7C - POST /advise response showing tool_log details]
 ```
 
-Set the collection variable:
+### Task 2 Alignment Table
 
-```text
-baseUrl = http://127.0.0.1:8010
-```
-
-Set Postman timeout to 120 seconds:
-
-```text
-Settings -> General -> Request timeout in ms -> 120000
-```
-
-## Written Work to Submit
-
-The written answers are already completed in:
+Use the completed table from:
 
 ```text
 docs/lab10_answers.md
 ```
 
-Attach or paste these sections:
+Placeholder for final submission:
 
-1. Graded Task 1 Reflection Question
-2. Tool Use Alignment Table
-3. Take-Home Explanation
+```text
+[Paste Tool Use Alignment Table Here]
+```
 
-## Final Submission Checklist
+### Task 2 Written Explanation
 
-Submit these files:
+Use the completed explanation from:
 
-- `reflection/state.py`
-- `reflection/nodes.py`
-- `reflection/graph.py`
-- `grade_advisor/state.py`
-- `grade_advisor/tools.py`
-- `grade_advisor/nodes.py`
-- `grade_advisor/graph.py`
-- `main.py`
-- `docs/lab10_answers.md`
-- `README.md`
-- `postman_collection.json`
+```text
+docs/lab10_answers.md
+```
 
-Attach these screenshots:
+Placeholder for final submission:
 
-1. `GET /health` response.
-2. Reflection graph terminal screenshot from `/visualise?graph=reflection`.
-3. Tool Use graph terminal screenshot from `/visualise?graph=advisor`.
-4. `POST /reflect` response with `reflection_rounds >= 2`.
-5. `POST /stream` showing generator and critic events.
-6. `POST /advise` single-tool query showing `get_cgpa`.
-7. `POST /advise` multi-tool query showing multiple tools and `tool_log`.
-8. Optional: Swagger UI at `http://127.0.0.1:8010/docs` showing all endpoints.
+```text
+[Paste 8-10 Line Tool Use Explanation Here]
+```
+
+## Final Screenshot Checklist
+
+Attach these screenshots in order:
+
+1. Health check response: `GET /health`.
+2. Reflection graph terminal output: `GET /visualise?graph=reflection`.
+3. Tool Use graph terminal output: `GET /visualise?graph=advisor`.
+4. Graded Task 1 request body: `POST /reflect`.
+5. Graded Task 1 response showing `final_draft`.
+6. Graded Task 1 response showing `reflection_rounds >= 2`.
+7. Stream response showing generator and critic events: `POST /stream`.
+8. Graded Task 2 single-tool request body: `POST /advise`.
+9. Graded Task 2 single-tool response showing `get_cgpa`.
+10. Graded Task 2 multi-tool request body: `POST /advise`.
+11. Graded Task 2 multi-tool response showing multiple tools.
+12. Graded Task 2 multi-tool response showing `tool_log`.
+13. Optional: Swagger UI showing all endpoints.
+14. Optional: GitHub repository page showing pushed code.
+
+## Final Files to Submit
+
+Submit these files or repository link:
+
+```text
+reflection/state.py
+reflection/nodes.py
+reflection/graph.py
+grade_advisor/state.py
+grade_advisor/tools.py
+grade_advisor/nodes.py
+grade_advisor/graph.py
+main.py
+docs/lab10_answers.md
+README.md
+LAB_REPORT.md
+postman_collection.json
+```
 
 ## How to Stop the Server
 
-If the server was started manually in a terminal, press:
+If running in a terminal, press:
 
 ```text
 Ctrl + C
 ```
 
-If it was started in the background on this machine, run:
+If running in the background:
 
 ```powershell
 Stop-Process -Id (Get-Content .\uvicorn-8010.pid) -Force
 ```
 
+## How to Restart the Server
+
+```powershell
+cd d:\langgraph-reflection
+.\.venv\Scripts\Activate.ps1
+uvicorn main:app --reload --port 8010
+```
